@@ -822,12 +822,9 @@ library Address {
     }
 }
 
-// File: @openzeppelin/contracts/token/ERC20/SafeERC20.sol
 
 
 pragma solidity >=0.6.0 <0.8.0;
-
-
 
 
 /**
@@ -961,15 +958,10 @@ interface IKAIDexRouter  {
 }
 
 
-
-
 interface IKAIDexPair  {
     function token0() external view returns (address);
     function token1() external view returns (address);
 }
-
-
-
 
 interface IMasterChef {
     function deposit(uint256 _pid, uint256 _amount, address _referrer) external;
@@ -1244,8 +1236,8 @@ contract StratManager is Ownable, Pausable {
     }
 
     /**
-     * @dev Updates beefy fee recipient.
-     * @param _sleepEarnFeeRecipient new beefy fee recipient address.
+     * @dev Updates sleepearn fee recipient.
+     * @param _sleepEarnFeeRecipient new sleepearn fee recipient address.
      */
     function setsleepEarnFeeRecipient(address _sleepEarnFeeRecipient) external onlyOwner {
         sleepEarnFeeRecipient = _sleepEarnFeeRecipient;
@@ -1257,8 +1249,6 @@ contract StratManager is Ownable, Pausable {
      */
     function beforeDeposit() external virtual {}
 }
-
-// File: contracts/BIFI/strategies/Common/FeeManager.sol
 
 
 pragma solidity ^0.6.12;

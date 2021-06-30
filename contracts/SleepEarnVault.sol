@@ -1031,8 +1031,6 @@ abstract contract ReentrancyGuard {
     }
 }
 
-// File: contracts/BIFI/interfaces/beefy/IStrategy.sol
-
 
 pragma solidity ^0.6.0;
 
