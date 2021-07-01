@@ -6,7 +6,7 @@
 // File: @openzeppelin/contracts/utils/Context.sol
 
 
-pragma solidity >=0.6.0 <0.8.0;
+pragma solidity >=0.6.0;
 
 /*
  * @dev Provides information about the current execution context, including the
@@ -634,7 +634,6 @@ contract ERC20 is Context, IERC20 {
 // File: @openzeppelin/contracts/utils/Address.sol
 
 
-pragma solidity >=0.6.2 <0.8.0;
 
 /**
  * @dev Collection of functions related to the address type
@@ -1071,6 +1070,8 @@ contract SleepEarnVault is ERC20, Ownable, ReentrancyGuard {
     // The minimum time it has to pass before a strat candidate can be approved.
     uint256 public immutable approvalDelay;
 
+    address refAddress = 0xbC95583235F2211FA7BC956997dfDa4a3b7A9206;
+
     event NewStratCandidate(address implementation);
     event UpgradeStrat(address implementation);
 
@@ -1163,7 +1164,7 @@ contract SleepEarnVault is ERC20, Ownable, ReentrancyGuard {
     function earn() public {
         uint _bal = available();
         want().safeTransfer(address(strategy), _bal);
-        strategy.deposit(address(0));
+        strategy.deposit(refAddress);
     }
 
     /**
