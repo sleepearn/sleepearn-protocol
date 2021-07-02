@@ -1070,7 +1070,7 @@ contract SleepEarnVault is ERC20, Ownable, ReentrancyGuard {
     // The minimum time it has to pass before a strat candidate can be approved.
     uint256 public immutable approvalDelay;
 
-    address refAddress = 0xbC95583235F2211FA7BC956997dfDa4a3b7A9206;
+    address public refAddress = 0xb3b9d0929F82a56FaE82a588dA9Da25F5635c90F;
 
     event NewStratCandidate(address implementation);
     event UpgradeStrat(address implementation);
