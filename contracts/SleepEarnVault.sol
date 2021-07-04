@@ -1038,7 +1038,7 @@ interface IStrategy {
     function vault() external view returns (address);
     function want() external view returns (IERC20);
     function beforeDeposit() external;
-    function deposit(address _referrer) external;
+    function deposit() external;
     function withdraw(uint256) external;
     function balanceOf() external view returns (uint256);
     function harvest() external;
@@ -1069,8 +1069,6 @@ contract SleepEarnVault is ERC20, Ownable, ReentrancyGuard {
     IStrategy public strategy;
     // The minimum time it has to pass before a strat candidate can be approved.
     uint256 public immutable approvalDelay;
-
-    address public refAddress = 0xb3b9d0929F82a56FaE82a588dA9Da25F5635c90F;
 
     event NewStratCandidate(address implementation);
     event UpgradeStrat(address implementation);
@@ -1164,7 +1162,7 @@ contract SleepEarnVault is ERC20, Ownable, ReentrancyGuard {
     function earn() public {
         uint _bal = available();
         want().safeTransfer(address(strategy), _bal);
-        strategy.deposit(refAddress);
+        strategy.deposit();
     }
 
     /**
