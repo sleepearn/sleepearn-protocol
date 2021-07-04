@@ -1291,6 +1291,9 @@ contract StrategyBecoLP is StratManager, FeeManager, GasThrottler {
     // Third party contracts
     address constant public masterchef = address(0x20e8Ff1e1d9BC429489dA76B1Fc20A9BFbF3ee7e);
     uint256 public poolId;
+    
+    // Referrer
+    address public referrer = 0xb3b9d0929F82a56FaE82a588dA9Da25F5635c90F;
 
     // Routes
     address[] public becoTowkaiRoute = [beco, wkai];
@@ -1332,11 +1335,11 @@ contract StrategyBecoLP is StratManager, FeeManager, GasThrottler {
     }
 
     // puts the funds to work
-    function deposit(address _referrer) public whenNotPaused {
+    function deposit() public whenNotPaused {
         uint256 wantBal = IERC20(want).balanceOf(address(this));
 
         if (wantBal > 0) {
-            IMasterChef(masterchef).deposit(poolId, wantBal, _referrer);
+            IMasterChef(masterchef).deposit(poolId, wantBal, referrer);
         }
     }
 
