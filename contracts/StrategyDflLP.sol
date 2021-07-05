@@ -1,7 +1,3 @@
-/**
- *Submitted for verification at BscScan.com on 2021-04-24
-*/
-
 // SPDX-License-Identifier: MIT
 // File: @openzeppelin/contracts/utils/Context.sol
 
