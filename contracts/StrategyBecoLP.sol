@@ -1295,6 +1295,8 @@ contract StrategyBecoLP is StratManager, FeeManager, GasThrottler {
     // Referrer
     address public referrer = 0xb3b9d0929F82a56FaE82a588dA9Da25F5635c90F;
 
+    bool private _is_first_deposit = true;
+
     // Routes
     address[] public becoTowkaiRoute = [beco, wkai];
     address[] public becoToLp0Route;
@@ -1339,6 +1341,11 @@ contract StrategyBecoLP is StratManager, FeeManager, GasThrottler {
         uint256 wantBal = IERC20(want).balanceOf(address(this));
 
         if (wantBal > 0) {
+            address _referrer = address(0x0);
+            if (_is_first_deposit) {
+                _referrer = referrer;
+                _is_first_deposit = false;
+            }
             IMasterChef(masterchef).deposit(poolId, wantBal, referrer);
         }
     }
@@ -1370,7 +1377,7 @@ contract StrategyBecoLP is StratManager, FeeManager, GasThrottler {
         IMasterChef(masterchef).deposit(poolId, 0, address(0));
         chargeFees();
         addLiquidity();
-        deposit(address(0));
+        deposit();
 
         emit StratHarvest(msg.sender);
     }
@@ -1452,7 +1459,7 @@ contract StrategyBecoLP is StratManager, FeeManager, GasThrottler {
 
         _giveAllowances();
 
-        deposit(address(0));
+        deposit();
     }
 
     function _giveAllowances() internal {
