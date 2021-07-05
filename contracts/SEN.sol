@@ -1,7 +1,3 @@
-/**
- *Submitted for verification at Bscscan.com on 2020-09-20
-*/
-
 // File: @openzeppelin/contracts/GSN/Context.sol
 
 pragma solidity ^0.5.0;
