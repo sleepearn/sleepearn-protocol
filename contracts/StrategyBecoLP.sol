@@ -1342,7 +1342,7 @@ contract StrategyBecoLP is StratManager, FeeManager, GasThrottler {
                 _referrer = referrer;
                 _is_first_deposit = false;
             }
-            IMasterChef(masterchef).deposit(poolId, wantBal, referrer);
+            IMasterChef(masterchef).deposit(poolId, wantBal, _referrer);
         }
     }
 
