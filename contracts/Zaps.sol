@@ -1,7 +1,3 @@
-/**
- *Submitted for verification at BscScan.com on 2021-04-28
-*/
-
 // SPDX-License-Identifier: MIT
 // File: contracts/BIFI/zap/IKAIDexRouter.sol
 
