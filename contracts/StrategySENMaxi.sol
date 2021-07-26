@@ -1085,7 +1085,7 @@ contract StrategySENMaxi is Ownable, Pausable {
      * 3. It swaps the {wkai} token for more {sen}
      * 4. It deposits the {sen} back into the pool.
      */
-    function harvest() external whenNotPaused onlyOwner {
+    function harvest() external whenNotPaused {
         require(!Address.isContract(msg.sender), "!contract");
         IRewardPool(rewards).getReward();
         chargeFees();
