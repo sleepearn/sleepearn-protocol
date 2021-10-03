@@ -211,11 +211,11 @@ contract BLKRedeemKai is Ownable, Pausable, ReentrancyGuard {
     uint256 public redemptedAmount = 0;
     
     function redeemKai (uint256 _blkAmount) public nonReentrant {
-        require(_blkAmount.add(redemptedAmount) <= blkMaxPool, "Blk amount exceeds remaining pool");
+        require(_blkAmount + redemptedAmount <= blkMaxPool, "Blk amount exceeds remaining pool");
         IKRC20(blk).burnFrom(_msgSender(), _blkAmount);
         uint256 _kaiAmountRedeem = _blkAmount.mul(kaiMaxpool).div(blkMaxPool);
         TransferHelper.safeTransferKAI(_msgSender(), _kaiAmountRedeem);
-        redemptedAmount.add(_blkAmount);
+        redemptedAmount += _blkAmount;
     }
     
     function emergencyWithdrawKAI(address _destination) external onlyOwner {
