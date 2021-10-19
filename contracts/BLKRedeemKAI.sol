@@ -207,7 +207,7 @@ contract BLKRedeemKai is Ownable, Pausable, ReentrancyGuard {
     
     address public blk = address(0xe8E41385b4Dd2Df285b3E48b0B59bDb4dFBAaaF2);
     uint256 public blkMaxPool = 50000 * 10**18;  // 50K BLK
-    uint256 public kaiMaxpool = 50000 * 10**18; // 50K KAI
+    uint256 public kaiMaxpool = 75000 * 10**18; //75K KAI
     uint256 public redemptedAmount = 0;
     
     function redeemKai (uint256 _blkAmount) public nonReentrant {

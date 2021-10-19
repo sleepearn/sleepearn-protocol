@@ -216,7 +216,6 @@ interface IMonsterCore {
     ) external returns (uint256);
 }
 
-
 contract BLKRedeemMonster is Ownable, Pausable, ReentrancyGuard {
     
     using SafeMath for uint256;
@@ -254,3 +253,12 @@ contract BLKRedeemMonster is Ownable, Pausable, ReentrancyGuard {
         _unpause();
     }
 }
+
+
+
+
+
+
+
+
+
