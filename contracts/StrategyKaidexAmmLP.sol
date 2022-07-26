@@ -1104,7 +1104,7 @@ library SafeERC20 {
     }
 }
 
-interface KaidexSwapRouter {
+interface KaidexpRouter {
     function factory() external pure returns (address);
 
     function WKAI() external pure returns (address);
@@ -1466,11 +1466,11 @@ contract StratManager is Ownable, Pausable {
      * {keeper} - Address to manage a few lower risk features of the strat
      * {strategist} - Address of the strategy author/deployer where strategist fee will go.
      * {vault} - Address of the vault that controls the strategy's funds.
-     * {unirouter} - Address of exchange to execute swaps.
+     * {kdxrouter} - Address of exchange to execute swaps.
      */
     address public keeper;
     address public strategist;
-    address public unirouter;
+    address public kdxrouter;
     address public vault;
     address public sleepEarnFeeRecipient;
 
@@ -1478,20 +1478,20 @@ contract StratManager is Ownable, Pausable {
      * @dev Initializes the base strategy.
      * @param _keeper address to use as alternative owner.
      * @param _strategist address where strategist fees go.
-     * @param _unirouter router to use for swaps
+     * @param _kdxrouter router to use for swaps
      * @param _vault address of parent vault.
      * @param _sleepEarnFeeRecipient address where to send sleepEarn's fees.
      */
     constructor(
         address _keeper,
         address _strategist,
-        address _unirouter,
+        address _kdxrouter,
         address _vault,
         address _sleepEarnFeeRecipient
     ) public {
         keeper = _keeper;
         strategist = _strategist;
-        unirouter = _unirouter;
+        kdxrouter = _kdxrouter;
         vault = _vault;
         sleepEarnFeeRecipient = _sleepEarnFeeRecipient;
     }
@@ -1527,10 +1527,10 @@ contract StratManager is Ownable, Pausable {
 
     /**
      * @dev Updates router that will be used for swaps.
-     * @param _unirouter new unirouter address.
+     * @param _kdxrouter new kdxrouter address.
      */
-    function setUnirouter(address _unirouter) external onlyOwner {
-        unirouter = _unirouter;
+    function setKDXrouter(address _kdxrouter) external onlyOwner {
+        kdxrouter = _kdxrouter;
     }
 
     /**
@@ -1585,17 +1585,14 @@ contract StrategyKaidexAmmLP is StratManager, FeeManager, GasThrottler {
     using SafeMath for uint256;
 
     // Tokens used
-    address public constant wkai =
-        address(0xAF984E23EAA3E7967F3C5E007fbe397D8566D23d);
-    address public constant kdx =
-        address(0xE9caC5d99375d02Fb506bE890011B2F57fC614E1);
+    address public constant wkai = address(0xAF984E23EAA3E7967F3C5E007fbe397D8566D23d);
+    address public constant kdx = address(0xE9caC5d99375d02Fb506bE890011B2F57fC614E1);
     address public want;
     address public lpToken0;
     address public lpToken1;
 
     // Third party contracts
-    address public constant masterchef =
-        address(0xD82BcB9A6Ded3Abe9e76e2fb038db4aff9b80b58);
+    address public constant masterchef = address(0xD82BcB9A6Ded3Abe9e76e2fb038db4aff9b80b58);
     uint256 public poolId;
 
     // Routes
@@ -1612,7 +1609,7 @@ contract StrategyKaidexAmmLP is StratManager, FeeManager, GasThrottler {
         address _want,
         uint256 _poolId,
         address _vault,
-        address _unirouter,
+        address _kdxrouter,
         address _keeper,
         address _strategist,
         address _sleepEarnFeeRecipient
@@ -1621,7 +1618,7 @@ contract StrategyKaidexAmmLP is StratManager, FeeManager, GasThrottler {
         StratManager(
             _keeper,
             _strategist,
-            _unirouter,
+            _kdxrouter,
             _vault,
             _sleepEarnFeeRecipient
         )
@@ -1642,7 +1639,6 @@ contract StrategyKaidexAmmLP is StratManager, FeeManager, GasThrottler {
         } else if (lpToken1 != kdx) {
             kdxToLp1Route = [kdx, wkai, lpToken1];
         }
-
         _giveAllowances();
     }
 
@@ -1651,7 +1647,7 @@ contract StrategyKaidexAmmLP is StratManager, FeeManager, GasThrottler {
         uint256 wantBal = IERC20(want).balanceOf(address(this));
 
         if (wantBal > 0) {
-            IMasterChef(masterchef).deposit(poolId, wantBal, address(0x0));
+            IMasterChef(masterchef).deposit(poolId, wantBal);
         }
     }
 
@@ -1681,7 +1677,7 @@ contract StrategyKaidexAmmLP is StratManager, FeeManager, GasThrottler {
 
     // compounds earnings and charges performance fee
     function harvest() external whenNotPaused onlyEOA gasThrottle {
-        IMasterChef(masterchef).deposit(poolId, 0, address(0));
+        IMasterChef(masterchef).deposit(poolId, 0);
         chargeFees();
         addLiquidity();
         deposit();
@@ -1692,7 +1688,7 @@ contract StrategyKaidexAmmLP is StratManager, FeeManager, GasThrottler {
     // performance fees
     function chargeFees() internal {
         uint256 towkai = IERC20(kdx).balanceOf(address(this)).mul(45).div(1000);
-        KadexSwapRouter(unirouter).swapExactTokensForTokens(
+        KaidexpRouter(kdxrouter).swapExactTokensForTokens(
             towkai,
             0,
             kdxTowkaiRoute,
@@ -1717,7 +1713,7 @@ contract StrategyKaidexAmmLP is StratManager, FeeManager, GasThrottler {
         uint256 kdxHalf = IERC20(kdx).balanceOf(address(this)).div(2);
 
         if (lpToken0 != kdx) {
-            KaidexSwapRouter(unirouter).swapExactTokensForTokens(
+            KaidexpRouter(kdxrouter).swapExactTokensForTokens(
                 kdxHalf,
                 0,
                 kdxToLp0Route,
@@ -1727,7 +1723,7 @@ contract StrategyKaidexAmmLP is StratManager, FeeManager, GasThrottler {
         }
 
         if (lpToken1 != kdx) {
-            KaidexSwapRouter(unirouter).swapExactTokensForTokens(
+            KaidexpRouter(kdxrouter).swapExactTokensForTokens(
                 kdxHalf,
                 0,
                 kdxToLp1Route,
@@ -1738,7 +1734,7 @@ contract StrategyKaidexAmmLP is StratManager, FeeManager, GasThrottler {
 
         uint256 lp0Bal = IERC20(lpToken0).balanceOf(address(this));
         uint256 lp1Bal = IERC20(lpToken1).balanceOf(address(this));
-        KaidexSwapRouter(unirouter).addLiquidity(
+        KaidexpRouter(kdxrouter).addLiquidity(
             lpToken0,
             lpToken1,
             lp0Bal,
@@ -1801,19 +1797,19 @@ contract StrategyKaidexAmmLP is StratManager, FeeManager, GasThrottler {
 
     function _giveAllowances() internal {
         IERC20(want).safeApprove(masterchef, uint256(-1));
-        IERC20(kdx).safeApprove(unirouter, uint256(-1));
+        IERC20(kdx).safeApprove(kdxrouter, uint256(-1));
 
-        IERC20(lpToken0).safeApprove(unirouter, 0);
-        IERC20(lpToken0).safeApprove(unirouter, uint256(-1));
+        IERC20(lpToken0).safeApprove(kdxrouter, 0);
+        IERC20(lpToken0).safeApprove(kdxrouter, uint256(-1));
 
-        IERC20(lpToken1).safeApprove(unirouter, 0);
-        IERC20(lpToken1).safeApprove(unirouter, uint256(-1));
+        IERC20(lpToken1).safeApprove(kdxrouter, 0);
+        IERC20(lpToken1).safeApprove(kdxrouter, uint256(-1));
     }
 
     function _removeAllowances() internal {
         IERC20(want).safeApprove(masterchef, 0);
-        IERC20(kdx).safeApprove(unirouter, 0);
-        IERC20(lpToken0).safeApprove(unirouter, 0);
-        IERC20(lpToken1).safeApprove(unirouter, 0);
+        IERC20(kdx).safeApprove(kdxrouter, 0);
+        IERC20(lpToken0).safeApprove(kdxrouter, 0);
+        IERC20(lpToken1).safeApprove(kdxrouter, 0);
     }
 }
